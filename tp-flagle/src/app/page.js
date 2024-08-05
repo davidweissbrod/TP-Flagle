@@ -1,5 +1,5 @@
 "use client";
-
+import { Spinner } from "react-bootstrap";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Form from 'react-bootstrap/Form';
@@ -11,6 +11,8 @@ export default function Home() {
   const [countries, setCountries] = useState([]);
   const [randomCountry, setRandomCountry] = useState(null);
   const [guess, setGuess] = useState('');
+  const [timeLeft, setTimeLeft] = useState(15);
+  const [timerActive, setTimerActive] = useState(false);
   const url = "https://countriesnow.space/api/v0.1/countries/flag/images";
 
   useEffect(() => {
@@ -27,10 +29,30 @@ export default function Home() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (timerActive) {
+      if (timeLeft === 0) {
+
+        setScore(prevScore => prevScore - 10);
+        selectRandomCountry(countries);
+        setTimeLeft(15); 
+        setTimerActive(true); 
+      }
+      
+      const interval = setInterval(() => {
+        setTimeLeft(prevTime => prevTime - 1);
+      }, 1000);
+
+      return () => clearInterval(interval); 
+    }
+  }, [timeLeft, timerActive]);
+
   const selectRandomCountry = (countriesList) => {
     if (countriesList && countriesList.length > 0) {
       const randomIndex = Math.floor(Math.random() * countriesList.length);
       setRandomCountry(countriesList[randomIndex]);
+      setTimeLeft(15); 
+      setTimerActive(true);
     }
   };
 
@@ -38,8 +60,12 @@ export default function Home() {
     event.preventDefault();
     if (randomCountry && guess.toLowerCase() === randomCountry.name.toLowerCase()) {
       setScore(score + 10);
+      setTimeLeft(15); 
+      setTimerActive(true); 
     } else {
       setScore(score - 1);
+      setTimeLeft(15); 
+      setTimerActive(true); 
     }
     selectRandomCountry(countries);
     setGuess('');
@@ -47,15 +73,15 @@ export default function Home() {
 
   return (
     <div style={{ textAlign: 'center', padding: '20px', backgroundColor: "whitesmoke" }}>
-      <h2>Adivina el país!</h2>
+      <b><h1>Adivina el país!</h1></b>
+      <h4>Tiempo restante: {timeLeft} segundos</h4>
       <br/>
       {randomCountry ? (
         <div>
           <Image 
             src={randomCountry.flag} 
-            alt={`Flag of ${randomCountry.name}`} 
             width={500} 
-            height={400} 
+            height={300} 
           />
           <br/>
           <br/>
@@ -76,7 +102,7 @@ export default function Home() {
           <h2>Puntuación: {score}</h2>
         </div>
       ) : (
-        <p>Cargando...</p>
+        <Spinner animation="border" />
       )}
     </div>
   );
