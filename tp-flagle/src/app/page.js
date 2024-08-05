@@ -58,7 +58,7 @@ export default function Home() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (randomCountry && guess.toLowerCase() === randomCountry.name.toLowerCase()) {
+    if (randomCountry && guess.toLowerCase() === randomCountry.name.toLowerCase() || guess.toLowerCase() === randomCountry.iso2.toLowerCase() || guess.toLowerCase() === randomCountry.iso3.toLowerCase() ) {
       setScore(score + 10);
       setTimeLeft(15); 
       setTimerActive(true); 
@@ -72,7 +72,7 @@ export default function Home() {
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px', backgroundColor: "whitesmoke" }}>
+    <div style={{ textAlign: 'center', padding: '20px', backgroundColor: "whitesmoke"}}>
       <b><h1>Adivina el país!</h1></b>
       <h4>Tiempo restante: {timeLeft} segundos</h4>
       <br/>
